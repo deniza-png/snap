@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meet Vanish</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="icons/icon48.png" alt="" width="32" height="32">
+        <div>
+          <h1>Meet Vanish</h1>
+          <p>Camera control for Google Meet</p>
+        </div>
+      </header>
+
+      <label class="switch-row" for="enabled">
+        <span>
+          <strong>Enable extension</strong>
+          <small>Show controls and allow camera effects</small>
+        </span>
+        <input id="enabled" type="checkbox">
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+      <p id="notice" class="notice" role="status"></p>
+
+      <section class="howto">
+        <h2>Quick start</h2>
+        <ol>
+          <li>Open a Meet call or its camera preview.</li>
+          <li>Choose <b>Capture empty room</b> in the floating panel.</li>
+          <li>Step out during the countdown, then use <b>Vanish / Appear</b>.</li>
+        </ol>
+      </section>
+
+      <a class="meet-link" href="https://meet.google.com/" target="_blank" rel="noreferrer">
+        Open Google Meet <span aria-hidden="true">↗</span>
+      </a>
+      <footer>Shortcut: <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd></footer>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

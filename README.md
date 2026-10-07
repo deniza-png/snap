@@ -1,40 +1,74 @@
-# Snap
+# Meet Vanish
 
-Snap your fingers and vanish from your own video in Google Meet. You stay in the call, your picture just dissolves into particles and leaves an empty room behind, until you snap again.
+An offline Chrome extension for Google Meet: capture your empty room, then vanish and reappear with an optional person-only dust effect.
 
-A Chrome extension. Everything runs locally in your browser: no video or audio is ever sent anywhere, and it works fine offline (aside from the call itself).
+**Version: 1.7.2.** The extension folder is byte-for-byte identical to the supplied v1.7.2 release. No v1.7.3 rendering changes are included. No compilation, API keys, or hosted backend are required.
 
-## Install (3 minutes, no terminal needed)
+## Features
 
-1. At the top of this page, click the green **`Code`** button → **`Download ZIP`**.
-2. Unzip the downloaded file (just double-click it). You'll get a folder, something like `snap-main`.
-3. Move that folder somewhere it won't get lost, for example your `Documents` folder. Don't delete or rename the files inside it.
-4. Open Chrome and go to: `chrome://extensions`.
-5. Turn on **`Developer mode`** (toggle in the top right of the page).
-6. Click the **`Load unpacked`** button that appears on the left, and select the folder from step 3.
-7. The extension now shows up in the list. Done — open Google Meet (reload the tab if it was already open).
+- Captured empty-room image replaces your outgoing camera video.
+- Reversible, source-colored dust effect.
+- Button and **Alt+Shift+V** controls.
+- Optional local finger-snap and V-sign detection.
+- Original call audio tracks are preserved.
+- Bundled on-device MediaPipe models; no runtime CDN downloads.
 
-It's normal that Chrome doesn't offer a one-click install like it does for the Chrome Web Store. This is a personal extension, not published in the store, so it needs `Developer mode` to load. That's not dangerous, it's just Chrome's standard way of loading extensions from outside the store.
+## Install
 
-## How to use it
+1. Download this repository as a ZIP and extract it.
+2. Open `chrome://extensions` in Chrome 116 or newer.
+3. Enable **Developer mode**, then choose **Load unpacked**.
+4. Select the **`meet-vanish-extension`** folder, not the repository root.
+5. Open or reload Google Meet and allow normal camera/microphone access.
+6. Choose **Capture empty room**, step out during the countdown, then return.
+7. Use **Vanish / Appear** or **Alt+Shift+V**. Enable dust, snaps, or V detection if wanted.
 
-1. Join a Meet call and allow camera and microphone access when the browser asks.
-2. A small dark pill button appears in the top left. Click it, then click `capture empty room`.
-3. Step out of frame for about 3 seconds, the extension takes a photo of the empty room.
-4. Sit back down. The status will change to `armed`, meaning it's ready.
-5. Snap your fingers (a normal, sharp snap). You'll dissolve into particles and disappear from the video. Snap again to come back.
+To replace a newer installation, replace its entire extension folder with this one, reload the extension in `chrome://extensions`, and reload Meet. This interrupts an active call, so update between calls.
 
-Backup options if the snap isn't heard: the `vanish / return` button in the panel, or the shortcut `Cmd` (on Windows, `Ctrl`) `+ Shift + X`.
-To quickly hide the pill button itself while recording: `Cmd`/`Ctrl` `+ Shift + H`.
+See [the extension guide](meet-vanish-extension/README.md) for complete usage, privacy details, troubleshooting, and historical validation notes.
 
-## Troubleshooting
+## Compatibility and limitations
 
-- **Not reacting to snaps** — open the panel (click the status text) and move the `snap sensitivity` slider to the right (more sensitive).
-- **Triggers on its own**, for example from talking or knocking sounds — move the same slider to the left (less sensitive).
-- **The disappearing looks messy / leaves a trace** — the lighting in the room has changed since you last clicked `capture empty room`. Click it again right before the call.
-- **The button never shows up at all** — reload the Meet tab after installing the extension, and check that `Developer mode` is on and the extension is enabled (toggle is blue) on `chrome://extensions`.
-- Keep the camera still and the lighting steady while the extension is running, otherwise the saved "empty room" stops matching reality.
+This release targets **Google Meet in Chrome only**. It does not support Zoom, Teams, desktop applications, or a system virtual camera.
+
+During dust, v1.7.2 renders at up to 1024×576 and scales the result to the outgoing resolution. This can soften high-resolution video. Segmentation can miss hair/hands or include room edges. Keep the camera and lighting stable when capturing the room.
+
+Browser background throttling and device performance affect animation. Production Meet, actual remote participant output, and real-device smoothness are not established by the automated tests. Test with another device/participant before relying on it in a call.
+
+## Development
+
+Edit the extension files directly, reload the extension, then reload Meet. Models and runtime files are already bundled.
+
+Run the dependency-free mocked regression suite from the repository root with Node.js 22 or newer:
+
+```sh
+npm test
+```
+
+It covers media lifecycle, audio identity, camera cleanup, gesture rules, offscreen ownership, dust timing, and safe GPU dispatch. It does **not** test actual WebGL output, gesture accuracy on a real person, or live Meet compatibility.
+
+Package the installable extension with Python 3.9 or newer:
+
+```sh
+python3 scripts/package-release.py
+```
+
+The ZIP and SHA-256 sidecar are written to `dist/`. The packager verifies every bundled extension file against `checksums/extension-v1.7.2.sha256`; it refuses changed or extra files. Deliberate development changes require reviewing/updating that checksum list and version before release.
+
+GitHub Actions runs the regression suite, checks JavaScript syntax and original-file integrity, and produces a downloadable extension artifact. It does not publish a release automatically.
+
+## Upload to GitHub
+
+See [GITHUB-UPLOAD.md](GITHUB-UPLOAD.md) for browser-upload and Git instructions, including release assets.
 
 ## Privacy
 
-Everything happens locally, inside your browser: no camera frame and no microphone audio is ever sent anywhere, there's no server this extension talks to. The microphone is only used to listen for the finger snap itself, the audio is never stored or recorded.
+No analytics or remote processing are included. Captured room images and settings stay in local extension storage. Inference samples are transient. The page bridge uses same-window messaging and is not a security boundary against Meet-page scripts. Optional snap detection may request a separate microphone stream if a suitable call track is unavailable.
+
+The repository contains extension code, bundled dependencies, documentation, tests, and packaging metadata—not your captured room image or Chrome settings.
+
+## Licensing
+
+Bundled MediaPipe files and model notices are preserved in [THIRD-PARTY-NOTICES.md](meet-vanish-extension/THIRD-PARTY-NOTICES.md) and [vendor/LICENSE.txt](meet-vanish-extension/vendor/LICENSE.txt).
+
+**No license has been selected for the project's first-party code.** Publishing a public repository does not itself grant a general open-source license. Choose a license before inviting reuse; the vendor's Apache license does not automatically license this extension's own code.

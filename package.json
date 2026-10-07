@@ -1,0 +1,12 @@
+{
+  "name": "meet-vanish",
+  "version": "1.7.2",
+  "private": true,
+  "description": "Offline Google Meet camera effect Chrome extension",
+  "scripts": {
+    "test": "node validation/test-extension.cjs && node validation/test-background.cjs && node validation/test-gesture.cjs && node validation/test-dust.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

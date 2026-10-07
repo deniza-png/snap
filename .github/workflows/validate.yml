@@ -1,0 +1,33 @@
+name: Validate and package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check JavaScript syntax
+        run: |
+          find meet-vanish-extension validation -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 | xargs -0 -n1 node --check
+      - name: Run mocked regression tests
+        run: npm test
+      - name: Verify original files and package extension
+        run: python3 scripts/package-release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meet-vanish-v1.7.2-extension
+          path: dist/*
+          if-no-files-found: error
