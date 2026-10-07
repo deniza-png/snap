@@ -10,8 +10,6 @@ this is an updated version of it. No compilation, API keys, or hosted backend ar
 - Reversible, source-colored dust effect.
 - Button and **Alt+Shift+V** controls.
 - Optional local finger-snap and V-sign detection.
-- Original call audio tracks are preserved.
-- Bundled on-device MediaPipe models; no runtime CDN downloads.
 
 ## Install
 
