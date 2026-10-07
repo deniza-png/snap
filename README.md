@@ -2,7 +2,7 @@
 
 An offline Chrome extension for Google Meet: capture your empty room, then vanish and reappear with an optional person-only dust effect.
 
-**Version: 1.7.2.** The extension folder is byte-for-byte identical to the supplied v1.7.2 release. No v1.7.3 rendering changes are included. No compilation, API keys, or hosted backend are required.
+this is an updated version of it. No compilation, API keys, or hosted backend are required.
 
 ## Features
 
