@@ -59,6 +59,20 @@ test("invalid or missing landmark data is rejected", () => {
   points[12].x = NaN;
   assert.equal(isVSign(points), false);
 });
+test("real MediaPipe image landmarks of a V sign pass", () => {
+  // MediaPipe's victory.jpg sampled like the camera (302x320 JPEG), x and z in height units as
+  // gesture-engine.js passes them. World landmarks of the same hand fail the fingertip angle.
+  const points = [
+    [0.4902, 0.807, 0], [0.5712, 0.7125, -0.0405], [0.5917, 0.5906, -0.0578],
+    [0.499, 0.5239, -0.08], [0.4032, 0.5, -0.1018], [0.53, 0.4501, -0.015],
+    [0.544, 0.3227, -0.0472], [0.5462, 0.2427, -0.0702], [0.5483, 0.1707, -0.0866],
+    [0.4438, 0.4611, -0.0311], [0.4172, 0.3156, -0.0725], [0.4014, 0.2217, -0.1029],
+    [0.3824, 0.1415, -0.1199], [0.3743, 0.5081, -0.0536], [0.3422, 0.44, -0.124],
+    [0.3944, 0.5284, -0.1393], [0.4271, 0.5959, -0.1282], [0.3145, 0.576, -0.0789],
+    [0.2929, 0.5058, -0.1262], [0.3363, 0.5584, -0.1203], [0.3712, 0.6115, -0.1048]
+  ].map(([x, y, z]) => ({ x, y, z }));
+  assert.equal(isVSign(points), true);
+});
 test("hold gate fires once, waits for release, and can fire again", () => {
   const gate = createHoldGate();
   let triggers = 0;
