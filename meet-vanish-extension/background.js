@@ -2,6 +2,8 @@
 
 const OWNER_KEY = "meetVanishGestureTabOwners";
 const PERSON_OWNER_KEY = "meetVanishPersonTabOwners";
+// Same pages as the manifest's content-script matches: Google Meet and the Zoom web client.
+const CALL_PAGE = /^https:\/\/(meet\.google\.com|([a-z0-9-]+\.)*zoom\.us\/wc)\//;
 let lifecycleQueue = Promise.resolve();
 
 function queueLifecycle(task) {
@@ -53,7 +55,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }).catch(() => {});
 });
 chrome.tabs.onUpdated.addListener((tabId, changes) => {
-  if (typeof changes.url === "string" && !changes.url.startsWith("https://meet.google.com/")) {
+  if (typeof changes.url === "string" && !CALL_PAGE.test(changes.url)) {
     queueLifecycle(async () => {
       await releaseGestureTab(tabId);
       await releaseGestureTab(tabId, PERSON_OWNER_KEY);
@@ -64,7 +66,7 @@ chrome.tabs.onUpdated.addListener((tabId, changes) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.target === "MEET_VANISH_OFFSCREEN") return false;
   if (sender.id !== chrome.runtime.id || !Number.isInteger(sender.tab?.id) ||
-      !sender.tab.url?.startsWith("https://meet.google.com/")) return false;
+      !CALL_PAGE.test(sender.tab.url)) return false;
   if (message?.type === "MEET_VANISH_GESTURE_CONTROL" ||
       message?.type === "MEET_VANISH_PERSON_CONTROL") {
     if (typeof message.enabled !== "boolean") return false;
@@ -121,7 +123,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       active: true,
       lastFocusedWindow: true
     });
-    if (!tab?.id || !tab.url?.startsWith("https://meet.google.com/")) return;
+    if (!tab?.id || !CALL_PAGE.test(tab.url)) return;
     await chrome.tabs.sendMessage(tab.id, { type: "MEET_VANISH_TOGGLE" });
   } catch (error) {
     console.debug("[Meet Vanish] Shortcut unavailable on this tab.", error);
