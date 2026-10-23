@@ -90,14 +90,14 @@ async function detect(image) {
     bitmap = await createImageBitmap(new Blob([bytes], { type: "image/jpeg" }));
     if (bitmap.width > 512 || bitmap.height > 512) throw new Error("Camera sample exceeds size limit.");
     const result = model.detect(bitmap);
-    const isV = (result.landmarks || []).some((landmarks, index) => {
-      const points = result.worldLandmarks?.[index] || landmarks.map((point) => ({
+    // Image landmarks in height units. World landmarks read straight fingertips
+    // as bent: isVSign rejected about two thirds of real V signs with them.
+    const isV = (result.landmarks || []).some((landmarks) =>
+      globalThis.MeetVanishGestureRules.isVSign(landmarks.map((point) => ({
         x: point.x * bitmap.width / bitmap.height,
         y: point.y,
         z: point.z * bitmap.width / bitmap.height
-      }));
-      return globalThis.MeetVanishGestureRules.isVSign(points);
-    });
+      }))));
     return { ok: true, isV, handPresent: Boolean(result.landmarks?.length) };
   } catch (error) {
     console.warn("[Meet Vanish] Local hand tracking failed.", error);
