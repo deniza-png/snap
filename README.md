@@ -27,7 +27,7 @@ See [the extension guide](meet-vanish-extension/README.md) for complete usage, p
 
 ## Compatibility and limitations
 
-This release targets **Google Meet in Chrome only**. It does not support Zoom, Teams, desktop applications, or a system virtual camera.
+This release targets **Google Meet and the Zoom web client (`*.zoom.us/wc/`) in Chrome**. It does not support the Zoom desktop app, Teams, other desktop applications, or a system virtual camera. To use it with Zoom, join from the browser: change `zoom.us/j/<id>` in the invite link to `app.zoom.us/wc/join/<id>`.
 
 During dust, v1.7.2 renders at up to 1024×576 and scales the result to the outgoing resolution. This can soften high-resolution video. Segmentation can miss hair/hands or include room edges. Keep the camera and lighting stable when capturing the room.
 

@@ -48,17 +48,13 @@ function environment(shared = { store: {}, document: true }) {
   };
   const context = vm.createContext({ chrome, console, Set, Number, Promise });
   vm.runInContext(source, context);
-  const send = (tabId, message) => new Promise((resolve, reject) => {
-    const accepted = listener(message, {
-      id: chrome.runtime.id, tab: { id: tabId, url: "https://meet.google.com/test-call" }
-    }, resolve);
-    if (!accepted && message.type !== "MEET_VANISH_GESTURE_CONTROL") {
-      // A synchronous response is allowed; invalid sender cases are outside these tests.
-    }
+  const send = (tabId, message, url = "https://meet.google.com/test-call") => new Promise((resolve) => {
+    // A rejected sender gets no response; resolve so tests can assert it was ignored.
+    if (!listener(message, { id: chrome.runtime.id, tab: { id: tabId, url } }, resolve)) resolve(undefined);
   });
   return {
     stats, shared,
-    control: (tabId, enabled) => send(tabId, { type: "MEET_VANISH_GESTURE_CONTROL", enabled }),
+    control: (tabId, enabled, url) => send(tabId, { type: "MEET_VANISH_GESTURE_CONTROL", enabled }, url),
     personControl: (tabId, enabled) => send(tabId, {type:"MEET_VANISH_PERSON_CONTROL",enabled}),
     frame: (tabId) => send(tabId, { type: "MEET_VANISH_GESTURE_FRAME", image: "data:image/jpeg;base64,AAAA" }),
     person: (tabId) => send(tabId, { type: "MEET_VANISH_PERSON_FRAME", image: "data:image/jpeg;base64,AAAA" }),
@@ -170,6 +166,19 @@ function environment(shared = { store: {}, document: true }) {
     assert.equal(restarted.stats.closes,0);
     restarted.remove(1); await restarted.idle();
     assert.equal(restarted.stats.closes,1);
+  });
+  await test("Zoom web client tabs own the model like Meet tabs; look-alike hosts are ignored", async () => {
+    const env = environment();
+    await env.control(1, true, "https://app.zoom.us/wc/123/join");
+    assert.equal(await env.control(2, true, "https://evilzoom.us/wc/123/join"), undefined);
+    assert.equal(await env.control(3, true, "https://zoom.us.example.com/wc/123/join"), undefined);
+    assert.deepEqual(Array.from(env.shared.store[OWNER_KEY]), [1]);
+    env.navigate(1, "https://app.zoom.us/wc/123/start");
+    await env.idle();
+    assert.equal(env.stats.closes, 0);
+    env.navigate(1, "https://app.zoom.us/j/123");
+    await env.idle();
+    assert.equal(env.stats.closes, 1);
   });
   console.log(`\n${passed}/${passed} background lifecycle tests passed.`);
 })().catch((error) => { console.error(error.stack); process.exitCode = 1; });

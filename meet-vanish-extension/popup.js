@@ -18,7 +18,7 @@ enabledInput.addEventListener("change", () => {
     }
     notice.classList.remove("error");
     notice.textContent = enabled
-      ? "Enabled. Open or refresh Meet to use the controls."
+      ? "Enabled. Open or refresh Meet or Zoom to use the controls."
       : "Disabled. Existing calls may need a camera reconnect to restore the direct feed.";
   });
 });
