@@ -70,5 +70,6 @@ header p { margin: 3px 0 0; color: #a4a9b8; font-size: 11px; }
   text-decoration: none;
 }
 .meet-link:hover { background: #211e35; }
+.meet-link + .meet-link { margin-top: 8px; }
 footer { margin-top: 14px; color: #9298a8; text-align: center; font-size: 10px; }
 kbd { padding: 2px 5px; border: 1px solid #424653; border-radius: 4px; color: #e4e6ed; font: inherit; }
